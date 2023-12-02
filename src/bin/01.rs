@@ -45,14 +45,11 @@ pub fn part_two(input: &str) -> Option<u32> {
                     .next()
                     .unwrap();
 
-                let rev_line: String = line.chars().rev().collect();
                 let indices = [
                     "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
                 ]
                 .map(|num| {
-                    let rev_num: String = num.chars().rev().collect();
-
-                    let first = line.find(num);
+                    let first = line.match_indices(num).next().map(|(i, _)| i);
                     let last = line.rmatch_indices(num).next().map(|(i, _)| i);
 
                     (first, last)
@@ -62,13 +59,13 @@ pub fn part_two(input: &str) -> Option<u32> {
                     .iter()
                     .enumerate()
                     .filter_map(|(i, (f, _))| f.map(|f| (i, f)))
-                    .min_by_key(|(i, f)| *f);
+                    .min_by_key(|(_, f)| *f);
 
                 let max = indices
                     .iter()
                     .enumerate()
-                    .filter_map(|(i, (f, _))| f.map(|f| (i, f)))
-                    .max_by_key(|(i, f)| *f);
+                    .filter_map(|(i, (_, f))| f.map(|f| (i, f)))
+                    .max_by_key(|(_, f)| *f);
 
                 let min = min.map_or(
                     first,
@@ -79,8 +76,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                     |(i, f)| if f > last_index { i as u32 + 1 } else { last },
                 );
 
-                dbg!(first, last, min, max, line);
-                dbg!(min * 10 + max)
+                min * 10 + max
             })
             .sum(),
     )
