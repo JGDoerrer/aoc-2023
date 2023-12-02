@@ -5,20 +5,21 @@ pub fn part_one(input: &str) -> Option<u32> {
         input
             .lines()
             .map(|line| {
-                let first: u32 = line
+                let first = line
                     .chars()
-                    .filter(|c| c.is_digit(10))
-                    .map(|c| c.to_string().parse().unwrap())
+                    .filter(|c| c.is_ascii_digit())
+                    .map(|c| c.to_digit(10).unwrap())
                     .next()
                     .unwrap();
-                let last: u32 = line
+                let second = line
                     .chars()
                     .rev()
-                    .filter(|c| c.is_digit(10))
-                    .map(|c| c.to_string().parse().unwrap())
+                    .filter(|c| c.is_ascii_digit())
+                    .map(|c| c.to_digit(10).unwrap())
                     .next()
                     .unwrap();
-                first * 10 + last
+
+                first * 10 + second
             })
             .sum(),
     )
@@ -32,51 +33,42 @@ pub fn part_two(input: &str) -> Option<u32> {
                 let (first_index, first): (usize, u32) = line
                     .chars()
                     .enumerate()
-                    .filter(|(_, c)| c.is_digit(10))
-                    .map(|(i, c)| (i, c.to_string().parse().unwrap()))
+                    .filter(|(_, c)| c.is_ascii_digit())
+                    .map(|(i, c)| (i, c.to_digit(10).unwrap()))
                     .next()
                     .unwrap();
                 let (last_index, last): (usize, u32) = line
                     .chars()
                     .rev()
                     .enumerate()
-                    .filter(|(_, c)| c.is_digit(10))
-                    .map(|(i, c)| (line.len() - i - 1, c.to_string().parse().unwrap()))
+                    .filter(|(_, c)| c.is_ascii_digit())
+                    .map(|(i, c)| (line.len() - i - 1, c.to_digit(10).unwrap()))
                     .next()
                     .unwrap();
 
                 let indices = [
                     "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
                 ]
-                .map(|num| {
-                    let first = line.match_indices(num).next().map(|(i, _)| i);
-                    let last = line.rmatch_indices(num).next().map(|(i, _)| i);
+                .map(|num| (line.find(num), line.rfind(num)));
 
-                    (first, last)
-                });
-
-                let min = indices
+                let first = indices
                     .iter()
                     .enumerate()
-                    .filter_map(|(i, (f, _))| f.map(|f| (i, f)))
-                    .min_by_key(|(_, f)| *f);
+                    .filter_map(|(i, (f, _))| f.map(|f| (i + 1, f)))
+                    .min_by_key(|(_, f)| *f)
+                    .map_or(
+                        first,
+                        |(i, f)| if f < first_index { i as u32 } else { first },
+                    );
 
-                let max = indices
+                let second = indices
                     .iter()
                     .enumerate()
-                    .filter_map(|(i, (_, f))| f.map(|f| (i, f)))
-                    .max_by_key(|(_, f)| *f);
+                    .filter_map(|(i, (_, f))| f.map(|f| (i + 1, f)))
+                    .max_by_key(|(_, f)| *f)
+                    .map_or(last, |(i, f)| if f > last_index { i as u32 } else { last });
 
-                let min = min.map_or(
-                    first,
-                    |(i, f)| if f < first_index { i as u32 + 1 } else { first },
-                );
-                let max = max.map_or(
-                    last,
-                    |(i, f)| if f > last_index { i as u32 + 1 } else { last },
-                );
-
-                min * 10 + max
+                first * 10 + second
             })
             .sum(),
     )
