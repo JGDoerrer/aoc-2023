@@ -41,14 +41,9 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let max_red = 12;
-    let max_green = 13;
-    let max_blue = 14;
-
     let mut sum = 0;
     for line in input.lines() {
-        let (start, rounds) = line.split_once(':').unwrap();
-        let id: u32 = start[5..].parse().unwrap();
+        let (_, rounds) = line.split_once(':').unwrap();
 
         let mut min_red = 0;
         let mut min_blue = 0;
