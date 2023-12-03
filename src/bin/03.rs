@@ -83,8 +83,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                         .enumerate()
                         .take(end_j)
                         .skip(start_j)
-                        .filter(|(_, c)| *c == '*')
-                        .next()
+                        .find(|(_, c)| *c == '*')
                     {
                         if let Some(gear) = gears.get_mut(&(i, char_j)) {
                             gear.push(num);
@@ -104,8 +103,8 @@ pub fn part_two(input: &str) -> Option<u32> {
     }
 
     let sum = gears
-        .into_iter()
-        .map(|(_, gears)| {
+        .into_values()
+        .map(|gears| {
             if gears.len() == 2 {
                 gears[0] * gears[1]
             } else {
