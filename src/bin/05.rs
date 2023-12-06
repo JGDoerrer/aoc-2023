@@ -92,7 +92,7 @@ pub fn part_two(input: &str) -> Option<u64> {
         .map(|(seed_start, seed_len)| {
             let mut ranges = vec![(seed_start, seed_len)];
 
-            'part_loop: for part in &parts {
+            for part in &parts {
                 let mut new_ranges = vec![];
                 while let Some((seed_start, seed_len)) = ranges.pop() {
                     let mut mapped = false;
