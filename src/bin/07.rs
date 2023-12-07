@@ -1,5 +1,3 @@
-use std::cmp::Ordering;
-
 advent_of_code::solution!(7);
 
 pub fn part_one(input: &str) -> Option<u32> {
@@ -20,12 +18,12 @@ pub fn part_one(input: &str) -> Option<u32> {
                     .collect::<Vec<_>>()
                     .try_into()
                     .unwrap(),
-                bid.trim().parse().unwrap(),
+                bid[1..].parse().unwrap(),
             )
         })
         .collect();
 
-    fn hand_type(hand: &[u32; 5]) -> usize {
+    inputs.sort_by_cached_key(|(hand, _)| {
         let mut counts = [0; 13];
 
         for card in hand {
@@ -43,7 +41,7 @@ pub fn part_one(input: &str) -> Option<u32> {
         let max_count = counts[0].1;
         let second_max_count = counts[1].1;
 
-        match max_count {
+        let mut value = match max_count {
             5 => 6,
             4 => 5,
             3 => match second_max_count {
@@ -55,21 +53,20 @@ pub fn part_one(input: &str) -> Option<u32> {
                 _ => 1,
             },
             _ => 0,
-        }
-    }
+        };
 
-    inputs.sort_by(|(a_hand, _), (b_hand, _)| {
-        hand_type(a_hand)
-            .cmp(&hand_type(b_hand))
-            .then(
-                a_hand
-                    .iter()
-                    .zip(b_hand)
-                    .map(|(a, b)| a.cmp(b))
-                    .reduce(Ordering::then)
-                    .unwrap(),
-            )
-            .reverse()
+        value *= 6;
+        value += hand[0] as usize - 1;
+        value *= 13;
+        value += hand[1] as usize - 1;
+        value *= 13;
+        value += hand[2] as usize - 1;
+        value *= 13;
+        value += hand[3] as usize - 1;
+        value *= 13;
+        value += hand[4] as usize - 1;
+
+        usize::MAX - value
     });
 
     let winnings = inputs
@@ -99,12 +96,12 @@ pub fn part_two(input: &str) -> Option<u32> {
                     .collect::<Vec<_>>()
                     .try_into()
                     .unwrap(),
-                bid.trim().parse().unwrap(),
+                bid[1..].parse().unwrap(),
             )
         })
         .collect();
 
-    fn hand_type(hand: &[u32; 5]) -> usize {
+    inputs.sort_by_cached_key(|(hand, _)| {
         let mut counts = [0; 14];
 
         for card in hand {
@@ -131,7 +128,7 @@ pub fn part_two(input: &str) -> Option<u32> {
             (counts[1].1, counts[2].1)
         };
 
-        match max_count + jokers {
+        let mut value = match max_count + jokers {
             5 => 6,
             4 => 5,
             3 => match second_max_count {
@@ -143,21 +140,20 @@ pub fn part_two(input: &str) -> Option<u32> {
                 _ => 1,
             },
             _ => 0,
-        }
-    }
+        };
 
-    inputs.sort_by(|(a_hand, _), (b_hand, _)| {
-        hand_type(a_hand)
-            .cmp(&hand_type(b_hand))
-            .then(
-                a_hand
-                    .iter()
-                    .zip(b_hand)
-                    .map(|(a, b)| a.cmp(b))
-                    .reduce(Ordering::then)
-                    .unwrap(),
-            )
-            .reverse()
+        value *= 6;
+        value += hand[0] as usize - 1;
+        value *= 13;
+        value += hand[1] as usize - 1;
+        value *= 13;
+        value += hand[2] as usize - 1;
+        value *= 13;
+        value += hand[3] as usize - 1;
+        value *= 13;
+        value += hand[4] as usize - 1;
+
+        usize::MAX - value
     });
 
     let winnings = inputs
