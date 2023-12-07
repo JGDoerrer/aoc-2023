@@ -22,8 +22,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     let mut product = 1;
     for (time, target) in times.into_iter().zip(distances.into_iter()) {
         let first_win = (0..=time)
-            .filter(|start| (time - start) * start > target)
-            .next()
+            .find(|start| (time - start) * start > target)
             .unwrap();
         let wins = time + 1 - first_win * 2;
 
@@ -60,11 +59,10 @@ pub fn part_two(input: &str) -> Option<u64> {
         .parse()
         .unwrap();
 
-    let first_win = (0..=time)
-        .filter(|start| (time - start) * start > target)
-        .next()
-        .unwrap();
-    let wins = time + 1 - first_win * 2;
+    let wins = ((((time * time - 4 * target - 1) as f32).sqrt() + (time % 2) as f32 / 2.0).floor())
+        as u64
+        + 1
+        - (time % 2);
 
     Some(wins)
 }

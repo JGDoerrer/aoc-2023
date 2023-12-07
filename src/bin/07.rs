@@ -69,10 +69,11 @@ pub fn part_one(input: &str) -> Option<u32> {
         usize::MAX - value
     });
 
+    let len = inputs.len();
     let winnings = inputs
-        .iter()
+        .into_iter()
         .enumerate()
-        .map(|(i, (_, bid))| (inputs.len() - i) as u32 * bid)
+        .map(|(i, (_, bid))| (len - i) as u32 * bid)
         .sum();
 
     Some(winnings)
@@ -156,10 +157,11 @@ pub fn part_two(input: &str) -> Option<u32> {
         usize::MAX - value
     });
 
+    let len = inputs.len();
     let winnings = inputs
-        .iter()
+        .into_iter()
         .enumerate()
-        .map(|(i, (_, bid))| (inputs.len() - i) as u32 * bid)
+        .map(|(i, (_, bid))| (len - i) as u32 * bid)
         .sum();
 
     Some(winnings)
