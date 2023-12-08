@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 advent_of_code::solution!(8);
 
 pub fn part_one(input: &str) -> Option<u32> {
@@ -13,21 +15,21 @@ pub fn part_one(input: &str) -> Option<u32> {
         })
         .cycle();
 
-    let nodes: Vec<_> = input
+    let nodes: HashMap<_, _> = input
         .lines()
         .skip(2)
         .map(|line| {
             let node = &line[0..3];
             let left = &line[7..10];
             let right = &line[12..15];
-            (node, left, right)
+            (node, (left, right))
         })
         .collect();
 
     let mut node = "AAA";
     let mut steps = 0;
     for is_left in instr {
-        let (_, left, right) = nodes.iter().find(|(n, _, _)| *n == node).unwrap();
+        let (left, right) = nodes.get(node).unwrap();
         node = if is_left { left } else { right };
         steps += 1;
 
@@ -52,37 +54,14 @@ pub fn part_two(input: &str) -> Option<u64> {
         })
         .cycle();
 
-    let nodes: Vec<_> = input
+    let nodes: HashMap<_, _> = input
         .lines()
         .skip(2)
         .map(|line| {
             let node = &line[0..3];
             let left = &line[7..10];
             let right = &line[12..15];
-            (node, left, right)
-        })
-        .collect();
-
-    let current_nodes: Vec<_> = nodes
-        .iter()
-        .filter(|(node, _, _)| node.ends_with('A'))
-        .collect();
-
-    let cycle_lengths: Vec<_> = current_nodes
-        .iter()
-        .map(|node| {
-            let mut node = node.0;
-            let mut steps = 0;
-            for is_left in instr.clone() {
-                let (_, left, right) = nodes.iter().find(|(n, _, _)| *n == node).unwrap();
-                node = if is_left { left } else { right };
-                steps += 1;
-
-                if node.ends_with('Z') {
-                    break;
-                }
-            }
-            steps
+            (node, (left, right))
         })
         .collect();
 
@@ -102,7 +81,26 @@ pub fn part_two(input: &str) -> Option<u64> {
         (n * m) / gcd(n, m)
     }
 
-    Some(cycle_lengths.into_iter().reduce(lcm).unwrap())
+    Some(
+        nodes
+            .keys()
+            .filter(|node| node.ends_with('A'))
+            .map(|mut node| {
+                let mut steps = 0;
+                for is_left in instr.clone() {
+                    let (left, right) = nodes.get(node).unwrap();
+                    node = if is_left { left } else { right };
+                    steps += 1;
+
+                    if node.ends_with('Z') {
+                        break;
+                    }
+                }
+                steps
+            })
+            .reduce(lcm)
+            .unwrap(),
+    )
 }
 
 #[cfg(test)]
