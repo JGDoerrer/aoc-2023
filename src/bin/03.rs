@@ -4,10 +4,10 @@ advent_of_code::solution!(3);
 
 pub fn part_one(input: &str) -> Option<u32> {
     let mut sum = 0;
-    let lines = input.lines().count();
+    let lines = input.lines().collect::<Vec<_>>();
     let line_len = input.lines().next().unwrap().len();
 
-    for (i, line) in input.lines().enumerate() {
+    for (i, line) in lines.iter().enumerate() {
         let mut j = 0;
         'num_loop: while j < line.len() {
             if line.chars().nth(j).unwrap().is_ascii_digit() {
@@ -21,15 +21,12 @@ pub fn part_one(input: &str) -> Option<u32> {
                 let num: u32 = num.parse().unwrap();
 
                 for di in -1isize..=1 {
-                    let i = (i as isize + di).clamp(0, lines as isize - 1) as usize;
+                    let i = (i as isize + di).clamp(0, lines.len() as isize - 1) as usize;
 
                     let start_j = j.saturating_sub(1);
                     let end_j = (j + len + 1).min(line_len);
 
-                    if input
-                        .lines()
-                        .nth(i)
-                        .unwrap()
+                    if lines[i]
                         .chars()
                         .take(end_j)
                         .skip(start_j)
@@ -53,10 +50,10 @@ pub fn part_one(input: &str) -> Option<u32> {
 
 pub fn part_two(input: &str) -> Option<u32> {
     let mut gears: HashMap<(usize, usize), Vec<u32>> = HashMap::new();
-    let lines = input.lines().count();
+    let lines = input.lines().collect::<Vec<_>>();
     let line_len = input.lines().next().unwrap().len();
 
-    for (i, line) in input.lines().enumerate() {
+    for (i, line) in lines.iter().enumerate() {
         let mut j = 0;
         'num_loop: while j < line.len() {
             if line.chars().nth(j).unwrap().is_ascii_digit() {
@@ -70,15 +67,12 @@ pub fn part_two(input: &str) -> Option<u32> {
                 let num: u32 = num.parse().unwrap();
 
                 for di in -1isize..=1 {
-                    let i = (i as isize + di).clamp(0, lines as isize - 1) as usize;
+                    let i = (i as isize + di).clamp(0, lines.len() as isize - 1) as usize;
 
                     let start_j = j.saturating_sub(1);
                     let end_j = (j + len + 1).min(line_len);
 
-                    if let Some((char_j, _)) = input
-                        .lines()
-                        .nth(i)
-                        .unwrap()
+                    if let Some((char_j, _)) = lines[i]
                         .chars()
                         .enumerate()
                         .take(end_j)
