@@ -59,10 +59,11 @@ pub fn part_two(input: &str) -> Option<u64> {
         .parse()
         .unwrap();
 
-    let wins = ((((time * time - 4 * target - 1) as f32).sqrt() + (time % 2) as f32 / 2.0).floor())
-        as u64
+    let wins = 2
+        * ((((time * time / 4 - target - 1) as f32).sqrt() + (time % 2) as f32 / 2.0).floor())
+            as u64
         + 1
-        - (time % 2);
+        - time % 2;
 
     Some(wins)
 }
