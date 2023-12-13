@@ -66,14 +66,10 @@ pub fn part_one(input: &str) -> Option<u32> {
     .try_into()
     .unwrap();
 
-    let mut distances = vec![vec![None; pipes[0].len()]; pipes.len()];
-    distances[start_pos.0][start_pos.1] = Some(0);
-
     let mut last = start_pos;
     let mut pos = starts[0];
     let mut distance = 1;
     loop {
-        distances[pos.0][pos.1] = Some(distance);
         let (dy, dx) = (
             pos.0 as isize - last.0 as isize,
             pos.1 as isize - last.1 as isize,
@@ -266,6 +262,7 @@ pub fn part_two(input: &str) -> Option<u32> {
         let mut inside = false;
         let mut crossed_north = false;
         let mut crossed_south = false;
+
         for j in 0..visited[0].len() {
             let pipe = pipes[i][j];
             let visited = visited[i][j];
@@ -280,13 +277,13 @@ pub fn part_two(input: &str) -> Option<u32> {
                 Some(Pipe::SE) | Some(Pipe::SW) if visited => {
                     crossed_south = !crossed_south;
                 }
-                Some(Pipe::EW) if visited => {}
                 _ => {
                     if inside {
                         count += 1;
                     }
                 }
             }
+
             if crossed_north && crossed_south {
                 inside = !inside;
                 crossed_north = false;
