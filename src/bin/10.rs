@@ -54,22 +54,10 @@ pub fn part_one(input: &str) -> Option<u32> {
         let (dy, dx) = (start_pos.0 as isize - y, start_pos.1 as isize - x);
         let pipe = pipes[*y as usize][*x as usize];
         match (dy, dx) {
-            (1, 0) => match pipe {
-                Some(Pipe::NS) | Some(Pipe::SE) | Some(Pipe::SW) => true,
-                _ => false,
-            },
-            (-1, 0) => match pipe {
-                Some(Pipe::NS) | Some(Pipe::NE) | Some(Pipe::NW) => true,
-                _ => false,
-            },
-            (0, 1) => match pipe {
-                Some(Pipe::EW) | Some(Pipe::NE) | Some(Pipe::SE) => true,
-                _ => false,
-            },
-            (0, -1) => match pipe {
-                Some(Pipe::EW) | Some(Pipe::NW) | Some(Pipe::SW) => true,
-                _ => false,
-            },
+            (1, 0) => matches!(pipe, Some(Pipe::NS) | Some(Pipe::SE) | Some(Pipe::SW)),
+            (-1, 0) => matches!(pipe, Some(Pipe::NS) | Some(Pipe::NE) | Some(Pipe::NW)),
+            (0, 1) => matches!(pipe, Some(Pipe::EW) | Some(Pipe::NE) | Some(Pipe::SE)),
+            (0, -1) => matches!(pipe, Some(Pipe::EW) | Some(Pipe::NW) | Some(Pipe::SW)),
             _ => unreachable!(),
         }
     })
@@ -175,7 +163,7 @@ pub fn part_two(input: &str) -> Option<u32> {
         .next()
         .unwrap();
 
-    let starts: [_; 2] = [(1isize, 0isize), (0 - 1, 0), (0, 0 + 1), (0, 0 - 1)]
+    let starts: [_; 2] = [(1isize, 0isize), (0 - 1, 0), (0, 1), (0, 0 - 1)]
         .into_iter()
         .filter(|(y, x)| {
             (*y + start_pos.0 as isize) >= 0
@@ -186,24 +174,11 @@ pub fn part_two(input: &str) -> Option<u32> {
         .filter(|(dy, dx)| {
             let pipe =
                 pipes[(*dy + start_pos.0 as isize) as usize][(*dx + start_pos.1 as isize) as usize];
-            (pipe, (dy, dx));
             match (dy, dx) {
-                (-1, 0) => match pipe {
-                    Some(Pipe::NS) | Some(Pipe::SE) | Some(Pipe::SW) => true,
-                    _ => false,
-                },
-                (1, 0) => match pipe {
-                    Some(Pipe::NS) | Some(Pipe::NE) | Some(Pipe::NW) => true,
-                    _ => false,
-                },
-                (0, -1) => match pipe {
-                    Some(Pipe::EW) | Some(Pipe::NE) | Some(Pipe::SE) => true,
-                    _ => false,
-                },
-                (0, 1) => match pipe {
-                    Some(Pipe::EW) | Some(Pipe::NW) | Some(Pipe::SW) => true,
-                    _ => false,
-                },
+                (-1, 0) => matches!(pipe, Some(Pipe::NS) | Some(Pipe::SE) | Some(Pipe::SW)),
+                (1, 0) => matches!(pipe, Some(Pipe::NS) | Some(Pipe::NE) | Some(Pipe::NW)),
+                (0, -1) => matches!(pipe, Some(Pipe::EW) | Some(Pipe::NE) | Some(Pipe::SE)),
+                (0, 1) => matches!(pipe, Some(Pipe::EW) | Some(Pipe::NW) | Some(Pipe::SW)),
                 _ => unreachable!(),
             }
         })
@@ -300,24 +275,15 @@ pub fn part_two(input: &str) -> Option<u32> {
                     inside = !inside;
                 }
                 Some(Pipe::NE) | Some(Pipe::NW) if visited => {
-                    if crossed_north {
-                        crossed_north = false;
-                    } else {
-                        crossed_north = true;
-                    }
+                    crossed_north = !crossed_north;
                 }
                 Some(Pipe::SE) | Some(Pipe::SW) if visited => {
-                    if crossed_south {
-                        crossed_south = false;
-                    } else {
-                        crossed_south = true;
-                    }
+                    crossed_south = !crossed_south;
                 }
                 Some(Pipe::EW) if visited => {}
                 _ => {
                     if inside {
                         count += 1;
-                    } else {
                     }
                 }
             }
