@@ -277,6 +277,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                 Some(Pipe::SE) | Some(Pipe::SW) if visited => {
                     crossed_south = !crossed_south;
                 }
+                Some(Pipe::EW) if visited => {}
                 _ => {
                     if inside {
                         count += 1;
