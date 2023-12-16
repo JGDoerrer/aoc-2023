@@ -119,11 +119,8 @@ pub fn part_two(input: &str) -> Option<u64> {
             line_counts.push(current_count);
         }
 
-        if all && counts == line_counts {
-            return 1;
-        }
-        if all && counts != line_counts {
-            return 0;
+        if all {
+            return if counts == line_counts { 1 } else { 0 };
         }
 
         if (ends_with_false && !counts.starts_with(&line_counts[0..line_counts.len()]))
@@ -176,15 +173,8 @@ pub fn part_two(input: &str) -> Option<u64> {
         }
     }
 
-    Some(
-        lines
-            .into_iter()
-            .map(|s| {
-                let mut cache = HashMap::new();
-                solve_rec(&mut cache, s)
-            })
-            .sum(),
-    )
+    let mut cache = HashMap::new();
+    Some(lines.into_iter().map(|s| solve_rec(&mut cache, s)).sum())
 }
 
 #[cfg(test)]
