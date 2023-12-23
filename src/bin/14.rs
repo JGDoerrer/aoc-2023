@@ -20,7 +20,7 @@ pub fn part_one(input: &str) -> Option<u32> {
             if input[i][j] == Some(true) {
                 let mut up = 0;
                 for k in 1..=i {
-                    if input[i - k][j] != None {
+                    if input[i - k][j].is_some() {
                         break;
                     }
                     up += 1;
@@ -70,7 +70,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                 if grid[i][j] == Some(true) {
                     let mut up = 0;
                     for k in 1..=i {
-                        if grid[i - k][j] != None {
+                        if grid[i - k][j].is_some() {
                             break;
                         }
                         up += 1;
@@ -83,18 +83,18 @@ pub fn part_two(input: &str) -> Option<u32> {
         }
 
         for j in 0..grid[0].len() {
-            for i in 0..grid.len() {
-                if grid[i][j] == Some(true) {
+            for row in &mut grid {
+                if row[j] == Some(true) {
                     let mut left = 0;
                     for k in 1..=j {
-                        if grid[i][j - k] != None {
+                        if row[j - k].is_some() {
                             break;
                         }
                         left += 1;
                     }
 
-                    grid[i][j] = None;
-                    grid[i][j - left] = Some(true);
+                    row[j] = None;
+                    row[j - left] = Some(true);
                 }
             }
         }
@@ -104,7 +104,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                 if grid[i][j] == Some(true) {
                     let mut down = 0;
                     for k in 1..=(grid.len() - i - 1) {
-                        if grid[i + k][j] != None {
+                        if grid[i + k][j].is_some() {
                             break;
                         }
                         down += 1;
@@ -121,7 +121,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                 if grid[i][j] == Some(true) {
                     let mut right = 0;
                     for k in 1..=(grid.len() - j - 1) {
-                        if grid[i][j + k] != None {
+                        if grid[i][j + k].is_some() {
                             break;
                         }
                         right += 1;

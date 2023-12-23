@@ -1,4 +1,7 @@
-use std::{cmp::Reverse, collections::BinaryHeap};
+use std::{
+    cmp::{Ordering, Reverse},
+    collections::BinaryHeap,
+};
 
 advent_of_code::solution!(17);
 
@@ -16,7 +19,7 @@ pub fn part_one(input: &str) -> Option<u32> {
         Down,
     }
 
-    #[derive(PartialEq, Eq, Debug, Ord, Clone)]
+    #[derive(PartialEq, Eq, Debug, Clone)]
     struct State {
         loss: u32,
         x: i32,
@@ -28,11 +31,17 @@ pub fn part_one(input: &str) -> Option<u32> {
     }
 
     impl PartialOrd for State {
-        fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+            Some(self.cmp(other))
+        }
+    }
+
+    impl Ord for State {
+        fn cmp(&self, other: &Self) -> Ordering {
             let a = self.loss + self.x.abs_diff(self.max_x) + self.y.abs_diff(self.max_y);
             let b = other.loss + other.x.abs_diff(other.max_x) + other.y.abs_diff(other.max_y);
 
-            Some(a.cmp(&b))
+            a.cmp(&b)
         }
     }
 
@@ -169,7 +178,7 @@ pub fn part_two(input: &str) -> Option<u32> {
         Down,
     }
 
-    #[derive(PartialEq, Eq, Debug, Ord, Clone)]
+    #[derive(PartialEq, Eq, Debug, Clone)]
     struct State {
         loss: u32,
         x: i32,
@@ -181,12 +190,15 @@ pub fn part_two(input: &str) -> Option<u32> {
         history: Vec<(i32, i32)>,
     }
 
-    impl PartialOrd for State {
-        fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-            let a = self.loss;
-            let b = other.loss;
+    impl Ord for State {
+        fn cmp(&self, other: &Self) -> Ordering {
+            self.loss.cmp(&other.loss)
+        }
+    }
 
-            Some(a.cmp(&b))
+    impl PartialOrd for State {
+        fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+            Some(self.cmp(other))
         }
     }
 

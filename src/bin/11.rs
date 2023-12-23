@@ -19,7 +19,7 @@ pub fn part_one(input: &str) -> Option<u32> {
         .collect();
 
     let empty_cols: Vec<_> = (0..space[0].len())
-        .filter(|i| space.iter().all(|row| !row.iter().nth(*i).unwrap()))
+        .filter(|i| space.iter().all(|row| !row[*i]))
         .collect();
 
     let galaxies: Vec<_> = space
@@ -33,8 +33,8 @@ pub fn part_one(input: &str) -> Option<u32> {
         })
         .map(|(y, x)| {
             (
-                y + empty_rows.iter().filter(|i| **i < y).count() * 1,
-                x + empty_cols.iter().filter(|i| **i < x).count() * 1,
+                y + empty_rows.iter().filter(|i| **i < y).count(),
+                x + empty_cols.iter().filter(|i| **i < x).count(),
             )
         })
         .collect();
@@ -43,10 +43,8 @@ pub fn part_one(input: &str) -> Option<u32> {
     for i in 0..galaxies.len() {
         let (y, x) = galaxies[i];
 
-        for j in (i + 1)..galaxies.len() {
-            let (y2, x2) = galaxies[j];
-
-            sum += y.abs_diff(y2) + x.abs_diff(x2);
+        for (y2, x2) in galaxies.iter().skip(i + 1) {
+            sum += y.abs_diff(*y2) + x.abs_diff(*x2);
         }
     }
 
@@ -72,7 +70,7 @@ pub fn part_two(input: &str) -> Option<u64> {
         .collect();
 
     let empty_cols: Vec<_> = (0..space[0].len())
-        .filter(|i| space.iter().all(|row| !row.iter().nth(*i).unwrap()))
+        .filter(|i| space.iter().all(|row| !row[*i]))
         .collect();
 
     let galaxies: Vec<_> = space
@@ -96,10 +94,8 @@ pub fn part_two(input: &str) -> Option<u64> {
     for i in 0..galaxies.len() {
         let (y, x) = galaxies[i];
 
-        for j in (i + 1)..galaxies.len() {
-            let (y2, x2) = galaxies[j];
-
-            sum += y.abs_diff(y2) + x.abs_diff(x2);
+        for (y2, x2) in galaxies.iter().skip(i + 1) {
+            sum += y.abs_diff(*y2) + x.abs_diff(*x2);
         }
     }
 

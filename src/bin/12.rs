@@ -124,7 +124,7 @@ pub fn part_two(input: &str) -> Option<u64> {
         }
 
         if (ends_with_false && !counts.starts_with(&line_counts[0..line_counts.len()]))
-            || (line_counts.len() > 0
+            || (!line_counts.is_empty()
                 && (!counts.starts_with(&line_counts[0..line_counts.len() - 1])))
             || line_counts.len() > counts.len()
         {
@@ -145,7 +145,7 @@ pub fn part_two(input: &str) -> Option<u64> {
             return *count;
         }
 
-        if line.len() == 0 && counts.len() == 0 {
+        if line.is_empty() && counts.is_empty() {
             return 1;
         }
 
@@ -164,12 +164,10 @@ pub fn part_two(input: &str) -> Option<u64> {
 
             cache.insert((line, counts), sum);
             sum
+        } else if line_counts == counts {
+            1
         } else {
-            if line_counts == counts {
-                1
-            } else {
-                0
-            }
+            0
         }
     }
 
