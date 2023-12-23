@@ -178,14 +178,10 @@ pub fn part_two(input: &str) -> Option<u64> {
                             continue 'l;
                         } else if val_range.start() >= value {
                         } else {
-                            let a = *val_range.start()..=(*value - 1);
-                            let b = *value..=*val_range.end();
                             let mut new_range = range.clone();
-                            if a.start() <= a.end() {
-                                new_range[*var] = a;
-                                ranges.push((next, new_range));
-                            }
-                            range[*var] = b;
+                            new_range[*var] = *val_range.start()..=(*value - 1);
+                            ranges.push((next, new_range));
+                            range[*var] = *value..=*val_range.end();
                         }
                     }
                     false => {
@@ -195,14 +191,10 @@ pub fn part_two(input: &str) -> Option<u64> {
                             continue 'l;
                         } else if val_range.end() <= value {
                         } else {
-                            let a = *val_range.start()..=*value;
-                            let b = (*value + 1)..=*val_range.end();
                             let mut new_range = range.clone();
-                            if b.start() <= b.end() {
-                                new_range[*var] = b;
-                                ranges.push((next, new_range));
-                            }
-                            range[*var] = a;
+                            new_range[*var] = (*value + 1)..=*val_range.end();
+                            ranges.push((next, new_range));
+                            range[*var] = *val_range.start()..=*value;
                         }
                     }
                 },
@@ -213,19 +205,15 @@ pub fn part_two(input: &str) -> Option<u64> {
                             accepted = *accept;
                         } else if val_range.start() >= value {
                         } else {
-                            let a = *val_range.start()..=(*value - 1);
-                            let b = *value..=*val_range.end();
                             let mut new_range = range.clone();
-                            if a.start() <= a.end() {
-                                new_range[*var] = a;
-                                if *accept {
-                                    sum += new_range
-                                        .into_iter()
-                                        .map(|r| r.count() as u64)
-                                        .product::<u64>();
-                                }
+                            new_range[*var] = *val_range.start()..=(*value - 1);
+                            if *accept {
+                                sum += new_range
+                                    .into_iter()
+                                    .map(|r| r.count() as u64)
+                                    .product::<u64>();
                             }
-                            range[*var] = b;
+                            range[*var] = *value..=*val_range.end();
                         }
                     }
                     false => {
@@ -234,24 +222,20 @@ pub fn part_two(input: &str) -> Option<u64> {
                             accepted = *accept;
                         } else if val_range.end() <= value {
                         } else {
-                            let a = *val_range.start()..=*value;
-                            let b = (*value + 1)..=*val_range.end();
                             let mut new_range = range.clone();
-                            if b.start() <= b.end() {
-                                new_range[*var] = b;
-                                if *accept {
-                                    sum += new_range
-                                        .into_iter()
-                                        .map(|r| r.count() as u64)
-                                        .product::<u64>();
-                                }
+                            new_range[*var] = (*value + 1)..=*val_range.end();
+                            if *accept {
+                                sum += new_range
+                                    .into_iter()
+                                    .map(|r| r.count() as u64)
+                                    .product::<u64>();
                             }
-                            range[*var] = a;
+                            range[*var] = *val_range.start()..=*value;
                         }
                     }
                 },
                 Workflow::ImmSend(next) => {
-                    ranges.push((next, range.clone()));
+                    ranges.push((next, range));
                     continue 'l;
                 }
                 Workflow::Imm(accept) => accepted = *accept,
