@@ -85,8 +85,6 @@ pub fn part_one(input: &str) -> Option<u32> {
                 low_pulses += 1;
             }
 
-            // dbg!(from, name, high);
-
             let (typ, connections) = modules.get(name).unwrap();
 
             if matches!(typ, ModuleType::FlipFlop) {
@@ -116,118 +114,131 @@ pub fn part_one(input: &str) -> Option<u32> {
         }
     }
 
-    dbg!(low_pulses, high_pulses);
     Some(low_pulses * high_pulses)
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
-    // let mut modules: HashMap<_, _> = input
-    //     .lines()
-    //     .map(|line| {
-    //         let (name, connection) = line.split_once(" -> ").unwrap();
+pub fn part_two(input: &str) -> Option<u64> {
+    let mut modules: HashMap<_, _> = input
+        .lines()
+        .map(|line| {
+            let (name, connection) = line.split_once(" -> ").unwrap();
 
-    //         let typ = if name.starts_with('%') {
-    //             ModuleType::FlipFlop
-    //         } else if name.starts_with('&') {
-    //             ModuleType::Conjunction
-    //         } else if name == "broadcaster" {
-    //             ModuleType::Broadcast
-    //         } else {
-    //             unreachable!()
-    //         };
+            let typ = if name.starts_with('%') {
+                ModuleType::FlipFlop
+            } else if name.starts_with('&') {
+                ModuleType::Conjunction
+            } else if name == "broadcaster" {
+                ModuleType::Broadcast
+            } else {
+                unreachable!()
+            };
 
-    //         let name = name.trim_start_matches(['%', '&']);
+            let name = name.trim_start_matches(['%', '&']);
 
-    //         let connections: Vec<_> = connection.split(',').map(|s| s.trim()).collect();
+            let connections: Vec<_> = connection.split(',').map(|s| s.trim()).collect();
 
-    //         (name, (typ, connections))
-    //     })
-    //     .collect();
+            (name, (typ, connections))
+        })
+        .collect();
 
-    // let mut new_modules = Vec::new();
+    let mut new_modules = Vec::new();
 
-    // for (_, connections) in modules.values() {
-    //     for c in connections {
-    //         if !modules.contains_key(c) {
-    //             new_modules.push((*c, (ModuleType::Output, Vec::new())));
-    //         }
-    //     }
-    // }
+    for (_, connections) in modules.values() {
+        for c in connections {
+            if !modules.contains_key(c) {
+                new_modules.push((*c, (ModuleType::Output, Vec::new())));
+            }
+        }
+    }
 
-    // for (n, m) in new_modules {
-    //     modules.insert(n, m);
-    // }
+    for (n, m) in new_modules {
+        modules.insert(n, m);
+    }
 
-    // let mut flipflops: HashMap<_, _> = modules
-    //     .iter()
-    //     .filter(|(_, (t, _))| matches!(t, ModuleType::FlipFlop))
-    //     .map(|(k, _)| (*k, false))
-    //     .collect();
+    let mut flipflops: HashMap<_, _> = modules
+        .iter()
+        .filter(|(_, (t, _))| matches!(t, ModuleType::FlipFlop))
+        .map(|(k, _)| (*k, false))
+        .collect();
 
-    // let mut conjunctions: HashMap<_, _> = modules
-    //     .iter()
-    //     .filter(|(_, (t, _))| matches!(t, ModuleType::Conjunction))
-    //     .map(|(k, _)| {
-    //         let inputs: HashMap<_, _> = modules
-    //             .iter()
-    //             .filter(|(_, (_, c))| c.contains(k))
-    //             .map(|(n, _)| (*n, false))
-    //             .collect();
-    //         (*k, inputs)
-    //     })
-    //     .collect();
+    let mut conjunctions: HashMap<_, _> = modules
+        .iter()
+        .filter(|(_, (t, _))| matches!(t, ModuleType::Conjunction))
+        .map(|(k, _)| {
+            let inputs: HashMap<_, _> = modules
+                .iter()
+                .filter(|(_, (_, c))| c.contains(k))
+                .map(|(n, _)| (*n, false))
+                .collect();
+            (*k, inputs)
+        })
+        .collect();
 
-    // let to_rx = modules
-    //     .iter()
-    //     .filter(|(_, (_, c))| c.contains(&"rx"))
-    //     .next()
-    //     .unwrap();
+    let to_rx = *modules
+        .iter()
+        .filter(|(_, (_, c))| c.contains(&"rx"))
+        .next()
+        .unwrap()
+        .0;
 
-    // dbg!(to_rx);
+    let to_to_rx = modules
+        .iter()
+        .filter(|(_, (_, c))| c.contains(&to_rx))
+        .map(|a| *a.0)
+        .collect::<Vec<&str>>();
 
-    // let mut i = 0;
-    // loop {
-    //     let mut signals = VecDeque::new();
+    let mut first_low = vec![0; to_to_rx.len()];
 
-    //     for m in &modules.get("broadcaster").unwrap().1 {
-    //         signals.push_back((*m, "broadcaster", false));
-    //     }
+    for i in 1.. {
+        let mut signals = VecDeque::new();
 
-    //     while let Some((name, from, high)) = signals.pop_front() {
-    //         // dbg!(from, name, high);
+        for m in &modules.get("broadcaster").unwrap().1 {
+            signals.push_back((*m, "broadcaster", false));
+        }
 
-    //         if name == "rx" && !high {
-    //             return Some(i);
-    //         }
+        while let Some((name, from, high)) = signals.pop_front() {
+            if name == "rx" && !high {
+                return Some(i);
+            }
+            if to_to_rx.contains(&name) && !high {
+                let index = to_to_rx.iter().position(|n| *n == name).unwrap();
+                if first_low[index] == 0 {
+                    first_low[index] = i;
 
-    //         let (typ, connections) = modules.get(name).unwrap();
+                    if first_low.iter().all(|i| *i != 0) {
+                        return Some(first_low.iter().product());
+                    }
+                }
+            }
 
-    //         if matches!(typ, ModuleType::FlipFlop) {
-    //             if !high {
-    //                 let flipflop = *flipflops.get(name).unwrap();
-    //                 flipflops.insert(name, !flipflop);
+            let (typ, connections) = modules.get(name).unwrap();
 
-    //                 for c in connections {
-    //                     signals.push_back((*c, name, !flipflop));
-    //                 }
-    //             }
-    //         } else if matches!(typ, ModuleType::Conjunction) {
-    //             let inputs = conjunctions.get_mut(name).unwrap();
+            if matches!(typ, ModuleType::FlipFlop) {
+                if !high {
+                    let flipflop = *flipflops.get(name).unwrap();
+                    flipflops.insert(name, !flipflop);
 
-    //             inputs.insert(&from, high);
+                    for c in connections {
+                        signals.push_back((*c, name, !flipflop));
+                    }
+                }
+            } else if matches!(typ, ModuleType::Conjunction) {
+                let inputs = conjunctions.get_mut(name).unwrap();
 
-    //             if inputs.values().all(|v| *v) {
-    //                 for c in connections {
-    //                     signals.push_back((*c, name, false));
-    //                 }
-    //             } else {
-    //                 for c in connections {
-    //                     signals.push_back((*c, name, true));
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+                inputs.insert(&from, high);
+
+                if inputs.values().all(|v| *v) {
+                    for c in connections {
+                        signals.push_back((*c, name, false));
+                    }
+                } else {
+                    for c in connections {
+                        signals.push_back((*c, name, true));
+                    }
+                }
+            }
+        }
+    }
 
     None
 }
